@@ -9,7 +9,7 @@ const LoginForm = ({ onLoginSuccess }) => {
     examination_number: "",
     email: "",
     password: "",
-    year: "1962",
+    year: "1985",
     month: "07",
     day: "19",
   };
@@ -96,10 +96,10 @@ const LoginForm = ({ onLoginSuccess }) => {
         if (data.status === "success") {
           onLoginSuccess();
         } else {
-          setErrors({ global: data.message || "Lỗi đăng nhập" });
+          setErrors({ global: data.message || "エラー。" });
         }
       })
-      .catch(() => setErrors({ global: "Lỗi kết nối Server!" }));
+      .catch(() => setErrors({ global: "サーバー接続エラー！" }));
   };
 
   return (
@@ -108,9 +108,11 @@ const LoginForm = ({ onLoginSuccess }) => {
         <div className="login-header">アプリのタイトルバナー</div>
         <div className="login-body">
           <p className="intro-text">
-            「アプリ名」にログインします。
+            「医療」にログインします。
             <br />
             診察券情報を入力してください。
+            <br />
+            メールアドレスに確認用のメールを送信します。
           </p>
 
           {errors.global && (
@@ -152,8 +154,8 @@ const LoginForm = ({ onLoginSuccess }) => {
                       {y}
                     </option>
                   ))}
-                </select>{" "}
-                年
+                </select>
+                <span>年</span>
                 <select
                   name="month"
                   value={formData.month}
@@ -165,8 +167,8 @@ const LoginForm = ({ onLoginSuccess }) => {
                       {m.toString().padStart(2, "0")}
                     </option>
                   ))}
-                </select>{" "}
-                月
+                </select>
+                <span>月</span>
                 <select
                   name="day"
                   value={formData.day}
@@ -178,8 +180,8 @@ const LoginForm = ({ onLoginSuccess }) => {
                       {d.toString().padStart(2, "0")}
                     </option>
                   ))}
-                </select>{" "}
-                日
+                </select>
+                <span>日</span>
               </div>
             </div>
 
@@ -194,6 +196,7 @@ const LoginForm = ({ onLoginSuccess }) => {
                 value={formData.email}
                 onChange={handleChange}
                 className={`form-input ${errors.email ? "input-error" : ""}`}
+                placeholder="Email"
               />
             </div>
 
@@ -208,6 +211,7 @@ const LoginForm = ({ onLoginSuccess }) => {
                 value={formData.password}
                 onChange={handleChange}
                 className={`form-input ${errors.password ? "input-error" : ""}`}
+                placeholder="Password"
               />
             </div>
 
