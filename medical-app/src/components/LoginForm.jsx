@@ -4,14 +4,20 @@ import "./LoginForm.css";
 import { getMessage, isValidEmail, isValidDate } from "../utils/common";
 
 const LoginForm = ({ onLoginSuccess }) => {
-  // 1. Định nghĩa dữ liệu mặc định ban đầu (để dùng lại khi Reset)
+  // --- 1. TÍNH TOÁN NĂM TỰ ĐỘNG (THEO SPEC) ---
+  const today = new Date();
+  const currentYear = today.getFullYear(); // Lấy năm hiện tại (ví dụ: 2025)
+  const defaultYear = currentYear - 40; // Mặc định = Năm nay - 40 (ví dụ: 1985)
+  const startYear = 1930; // Năm bắt đầu (CST_BIRTH_YEAR_START)
+
+  // 2. Định nghĩa dữ liệu mặc định ban đầu
   const INITIAL_DATA = {
     examination_number: "",
     email: "",
     password: "",
-    year: "1985",
-    month: "07",
-    day: "19",
+    year: defaultYear.toString(), // <--- Tự động lấy năm 1985 (nếu nay là 2025)
+    month: "01", // Mặc định tháng (giữ nguyên theo bạn)
+    day: "01", // Mặc định ngày (giữ nguyên theo bạn)
   };
 
   // State lưu dữ liệu nhập (Khởi tạo bằng dữ liệu mặc định)
@@ -23,18 +29,24 @@ const LoginForm = ({ onLoginSuccess }) => {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const years = Array.from({ length: 100 }, (_, i) => 1930 + i);
+  // --- 3. TẠO DANH SÁCH NĂM ĐỘNG ---
+  // Tạo mảng từ 1930 đến Năm hiện tại
+  const years = Array.from(
+    { length: currentYear - startYear + 1 },
+    (_, i) => startYear + i
+  );
+  // Nếu muốn năm mới nhất lên đầu thì thêm .reverse() ở đây
+
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
-  // --- HÀM XỬ LÝ NÚT CANCEL (MỚI THÊM) ---
+  // --- HÀM XỬ LÝ NÚT CANCEL ---
   const handleCancel = () => {
-    // 1. Reset dữ liệu về ban đầu (Xóa trắng ô nhập)
+    // 1. Reset dữ liệu về ban đầu (Năm sẽ quay về 1985)
     setFormData(INITIAL_DATA);
-    // 2. Xóa sạch các thông báo lỗi đỏ (nếu đang hiện)
+    // 2. Xóa sạch các thông báo lỗi đỏ
     setErrors({});
   };
-  // ---------------------------------------
 
   const validate = () => {
     let newErrors = {};
@@ -54,7 +66,7 @@ const LoginForm = ({ onLoginSuccess }) => {
       newErrors.email = getMessage("E0001", ["メールアドレス"]);
       hasError = true;
     } else if (!isValidEmail(formData.email)) {
-      newErrors.email = getMessage("E0019") || "Format Error";
+      newErrors.email = getMessage("E0019", ["メールアドレス"]) || "Format Error";
       hasError = true;
     }
 
@@ -220,7 +232,6 @@ const LoginForm = ({ onLoginSuccess }) => {
                 ログイン
               </button>
 
-              {/* Gắn hàm handleCancel vào nút Cancel */}
               <button
                 type="button"
                 className="btn-cancel"

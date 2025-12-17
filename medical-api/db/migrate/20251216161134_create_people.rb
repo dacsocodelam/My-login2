@@ -3,14 +3,14 @@ class CreatePeople < ActiveRecord::Migration[8.0]
     # Tạo bảng 'people' (số nhiều của person)
     create_table :person, comment: '個人情報 (Thông tin cá nhân)' do |t|
       
-      t.integer :examination_number, comment: '診察券番号 (Số phiếu khám)'
-      t.string :family_name, comment: '姓 (Họ)'
-      t.string :family_name_kana, comment: '姓カナ (Họ Kana)'
-      t.string :first_name, comment: '名 (Tên)'
-      t.string :first_name_kana, comment: '名カナ (Tên Kana)'
+      t.integer :examination_number, comment: '診察券番号'
+      t.string :family_name, comment: '姓 '
+      t.string :family_name_kana, comment: '姓カナ '
+      t.string :first_name, comment: '名 '
+      t.string :first_name_kana, comment: '名カナ '
       
-      t.integer :gender_type, comment: '性別タイプ (Giới tính)' 
-      t.date :birthday, comment: '生年月日 (Ngày sinh)'
+      t.integer :gender_type, comment: '性別タイプ ' 
+      t.date :birthday, comment: '生年月日 '
       t.string :email, comment: 'メールアドレス'
       t.string :password, comment: 'パスワード'
       t.string :zip, limit: 7, comment: '郵便番号'

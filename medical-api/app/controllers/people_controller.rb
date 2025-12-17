@@ -1,42 +1,58 @@
 class PeopleController < ApplicationController
-  # --- HÀM LOGIN (BẢN DEBUG CHI TIẾT) ---
+  # --- HÀM XỬ LÝ KÍCH HOẠT / ĐĂNG KÝ TẠM (PHIÊN BẢN RÚT GỌN) ---
   def login
-    puts "\n========== CHECK LOGIN =========="
+    puts "\n========== CHECK USER EXISTENCE (SIMPLE) =========="
     
-    # 1. Lấy dữ liệu từ React
+    # 1. Lấy dữ liệu Input
     email_input = params[:email]
-    pass_input = params[:password]
+    pass_input = params[:password]        # Password mới để update
     exam_num_input = params[:examination_number]
     birthday_input = params[:birthday]
 
-    # 2. Tìm User
-    user = Person.find_by(email: email_input)
+    # 2. TÌM KIẾM NGƯỜI DÙNG (EXISTENCE CHECK)
+    # Điều kiện: Khớp Mã số + Ngày sinh + Email + Chưa bị xóa
+    user = Person.find_by(
+      examination_number: exam_num_input,
+      birthday: birthday_input,
+      email: email_input,
+      deleted_flag: false 
+    )
 
     if user
-      # 3. So sánh từng món
-      # (Chuyển hết về chuỗi to_s để so sánh cho dễ)
-      check_pass = (user.password == pass_input)
-      check_exam = (user.examination_number.to_s == exam_num_input.to_s)
-      check_birth = (user.birthday.to_s == birthday_input.to_s)
+      puts "=> TÌM THẤY USER ID: #{user.id}"
 
-      # --- IN RA MÀN HÌNH ĐEN ĐỂ KIỂM TRA ---
-      puts "User Found: #{user.email}"
-      puts "------------------------------------------------"
-      puts "- Check Pass:  #{check_pass} | DB: '#{user.password}' vs Input: '#{pass_input}'"
-      puts "- Check Exam:  #{check_exam} | DB: '#{user.examination_number}' vs Input: '#{exam_num_input}'"
-      puts "- Check Birth: #{check_birth}"
-      puts "   + DB đang lưu:   '#{user.birthday}'"
-      puts "   + Web gửi lên:   '#{birthday_input}'"
-      puts "------------------------------------------------"
-
-      if check_pass && check_exam && check_birth
-        render json: { status: 'success', message: 'Login OK!', user: user }
+      # --- 3. THỰC HIỆN ĐĂNG KÝ TẠM LUÔN (BỎ QUA CHECK M0109, M0110) ---
+     puts "=> Tiến hành cập nhật Password & Thời gian..."
+      
+      if user.update(
+        password: pass_input,   # Ghi đè mật khẩu mới
+        applied: Time.now       # Cập nhật thời gian nộp
+      )
+        puts "=> UPDATE THÀNH CÔNG!"
+        
+        # SỬ DỤNG FILE MÃ LỖI: Gọi mã S0001
+        render json: { 
+          status: 'success', 
+          message: ApiMessage.get("S0001"), # "仮登録が完了しました。"
+          user: user 
+        }
       else
-        render json: { status: 'error', message: 'Thông tin nhập vào không khớp!' }, status: :unauthorized
+        # SỬ DỤNG FILE MÃ LỖI: Gọi mã ERR_DB
+        render json: { 
+          status: 'error', 
+          message: ApiMessage.get("ERR_DB") 
+        }, status: :unprocessable_entity
       end
+
     else
-      puts "User Not Found: #{email_input}"
-      render json: { status: 'error', message: 'Không tìm thấy Email này!' }, status: :unauthorized
+      # --- TRƯỜNG HỢP KHÔNG TÌM THẤY (M0103) ---
+      puts "=> KHÔNG TÌM THẤY USER (M0103)"
+      
+      # SỬ DỤNG FILE MÃ LỖI: Gọi mã M0103
+      render json: { 
+        status: 'error', 
+        message: ApiMessage.get("M0103") # "M0103: Thông tin nhập vào..."
+      }, status: :unauthorized
     end
   end
 
