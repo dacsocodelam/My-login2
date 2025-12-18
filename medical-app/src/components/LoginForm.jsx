@@ -117,7 +117,7 @@ const LoginForm = ({ onLoginSuccess }) => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <div className="login-header">アプリのタイトルバナー</div>
+        <div className="login-header">医療アプリ</div>
         <div className="login-body">
           <p className="intro-text">
             「医療」にログインします。

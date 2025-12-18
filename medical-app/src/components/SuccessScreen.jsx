@@ -7,7 +7,7 @@ const SuccessScreen = () => {
     <div className="success-container">
       <div className="success-card">
         <div className="success-header">
-          アプリのタイトルバナー
+         医療アプリ
         </div>
         <div className="success-body">
           <div className="success-message">
